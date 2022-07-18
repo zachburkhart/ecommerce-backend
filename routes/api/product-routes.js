@@ -14,9 +14,13 @@ router.get('/', (req, res) => {
         attributes: ['id', 'tag_name'],
         through: ProductTag,
         as: 'product_tag_'
-      }]
+      },
+      {
+        model: Category,
+        attributes: ['id', 'tag_name']
+    }]
   })
-    .then(dbCategoryData => res.json(dbCategoryData))
+    .then(dbProductData => res.json(dbProductData))
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
@@ -32,18 +36,17 @@ router.get('/:id', (req, res) => {
         id: req.params.id
     },
     include: [
-        {
-            model: Category,
-            attributes: ['id', 'category_name']
-        },
-        {
-            model: Tag,
-            attributes: ['id', 'tag_name'],
-            through: ProductTag,
-            as: 'product_tag_'
-        }
-    ]
-})
+      {
+        model: Tag,
+        attributes: ['id', 'tag_name'],
+        through: ProductTag,
+        as: 'product_tag_'
+      },
+      {
+        model: Category,
+        attributes: ['id', 'category_name']
+      }]
+  })
     .then(dbProductData => {
         if (!dbProductData) {
             res.status(404).json({ message: 'No product found for this id.' });
@@ -76,7 +79,7 @@ router.post('/', (req, res) => {
   .catch((err) => {
       console.log(err);
       if(!req.body.tagIds) {
-          res.status(400).json({ message: 'Include tagIds' });
+          res.status(400).json({ message: 'No tagID found' });
           return;
       }
       res.status(400).json(err);
@@ -134,7 +137,17 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
+  Product.destroy({
+    where: {id: req.params.id}
+  })
   // delete one product by its `id` value
+  .then(dbProductData => {
+  res.json(dbProductData);
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(400).json(err);
+  });
 });
 
 module.exports = router;
