@@ -1,4 +1,4 @@
-# Ecommerce Back End
+# Ecommerce Backend
 
 ## Purpose
 A back end for an ecommerce website that uses the latest technologies so that a given company can compete with other e-commerce companies
